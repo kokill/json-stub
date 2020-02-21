@@ -1,21 +1,17 @@
+'use strict';
 const express = require('express');
-const jsonServer = require('json-server');
-const middlewares = jsonServer.defaults();
-const path = require('path');
 const serverless = require('serverless-http');
-
-// const jsonRouter = jsonServer.router('/db.json');
 const app = express();
 
 const router = express.Router();
-app.use(middlewares);
-
-// app.use('public', express.static(path.join(process.cwd(), 'public')));
 router.get('/', (req, res) => {
-   res.status(200).send({success: true});
+   res.writeHead(200, { 'Content-Type': 'text/html' });
+   res.write('<h1>Hello from Express.js!</h1>');
+   res.end();
 });
-app.use('/.netlify/functions/health', router);
-// app.use('/.netlify/functions/server', jsonRouter);
+router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
+
+app.use('/.netlify/functions/server', router);  // path must route to lambda
 
 module.exports = app;
 module.exports.handler = serverless(app);
